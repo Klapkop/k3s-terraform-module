@@ -15,7 +15,6 @@ locals {
     my_keys = join("\n", data.github_user.me.ssh_keys)
 }
 
-
 resource "proxmox_vm_qemu" "proxmox_vm_server" {
   count       = var.k3s_servers.num
   name        = "${var.cluster_name}-server-${count.index}"
