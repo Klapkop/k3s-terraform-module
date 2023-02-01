@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    proxmox = {
+      source  = "telmate/proxmox"
+      version = ">=2.8.0"
+    }
+  }
+}
+
 data "github_user" "me" {
   username = var.github_username
 }
@@ -91,8 +100,8 @@ resource "proxmox_vm_qemu" "proxmox_vm_workers" {
 data "template_file" "k8s" {
   template = file("${path.module}/templates/k8s.tpl")
   vars = {
-    k3s_server_ip = "${join("\n", [for instance in proxmox_vm_qemu.proxmox_vm_server : join("", [instance.default_ipv4_address, " ansible_ssh_private_key_file=", var.pvt_key])])}"
-    k3s_node_ip   = "${join("\n", [for instance in proxmox_vm_qemu.proxmox_vm_workers : join("", [instance.default_ipv4_address, " ansible_ssh_private_key_file=", var.pvt_key])])}"
+    k3s_server_ip = "${join("\n", [for instance in proxmox_vm_qemu.proxmox_vm_server : instance.default_ipv4_address])}"
+    k3s_node_ip   = "${join("\n", [for instance in proxmox_vm_qemu.proxmox_vm_workers : instance.default_ipv4_address])}"
   }
 }
 
